@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Task Manager</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: radial-gradient(circle, #FFAFBD, #C9FFBF, #FFEBBF);
+    }
+    #container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        max-width: 800px;
+        width: 100%;
+    }
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .input-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .input-container input,
+    .input-container select {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        flex: 1;
+        outline: none;
+    }
+    .input-container button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    .input-container button:hover {
+        background-color: #0056b3;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .task-item {
+        transition: background-color 0.3s;
+    }
+    .task-item:hover {
+        background-color: #f0f0f0;
+    }
+    .completed {
+        background-color: lightgreen;
+    }
+    .priority-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        background-color: #4CAF50;
+        margin-right: 5px;
+        transition: background-color 0.3s;
+        color: white;
+    }
+    .priority-btn.low { background-color: green}
+    .priority-btn.normal { background-color: blue; }
+    .priority-btn.high { background-color: red; }
+    .priority-btn:hover { filter: brightness(0.9); }
+    .action-btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    .edit-btn {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    .action-btn:hover {
+        filter: brightness(0.9);
+    }
+    
+</style>
+</head>
+<body>
+    <div id="container">
+        <h1>Your Task Manager</h1>
+        <div class="input-container">
+            <input type="text" id="taskInput" placeholder="Enter task">
+            <select id="prioritySelect">
+                <option value="low">Low</option>
+                <option value="normal" selected>Normal</option>
+                <option value="high">High</option>
+            </select>
+            <select id="statusSelect">
+                <option value="todo">To Do</option>
+                <option value="inprogress">In Progress</option>
+                <option value="done">Done</option>
+            </select>
+            <select id="percentCompleteSelect">
+                <option value="0">0%</option>
+                <option value="25">25%</option>
+                <option value="50">50%</option>
+                <option value="75">75%</option>
+                <option value="100">100%</option>
+            </select>
+            <button onclick="addTask()">Add Task</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>% Complete</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="taskList">
+                <!-- Tasks will be listed here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        
+        function addTask() {
+            var taskInput = document.getElementById('taskInput').value;
+            var prioritySelect = document.getElementById('prioritySelect').value;
+            var statusSelect = document.getElementById('statusSelect').value;
+            var percentCompleteSelect = document.getElementById('percentCompleteSelect').value;
+
+            if (taskInput === '') {
+                alert('Please enter a task!');
+                return;
+            }
+
+            var currentTime = new Date();
+            var startTime = currentTime.toLocaleTimeString();
+
+            var table = document.getElementById('taskList');
+            var row = table.insertRow();
+            row.className = 'task-item';
+            row.innerHTML = `
+                <td>${taskInput} (Started: ${startTime})</td>
+                <td>
+                    <button class="priority-btn ${prioritySelect.toLowerCase()}">${prioritySelect}</button>
+                </td>
+                <td>${statusSelect}</td>
+                <td>${percentCompleteSelect}%</td>
+                <td>
+                    <input type="checkbox" onclick="markComplete(this)">
+                    <button onclick="editTask(this)" class="action-btn edit-btn">Edit</button>
+                    <button onclick="deleteTask(this)" class="action-btn delete-btn">Delete</button>
+                </td>
+            `;
+
+            // Clear input fields after adding task
+            document.getElementById('taskInput').value = '';
+            document.getElementById('prioritySelect').value = 'normal';
+            document.getElementById('statusSelect').value = 'todo';
+            document.getElementById('percentCompleteSelect').value = '0';
+        }
+
+        function editTask(btn) {
+            var row = btn.parentNode.parentNode;
+            var cells = row.getElementsByTagName('td');
+
+            for (var i = 0; i < cells.length - 1; i++) {
+                var cell = cells[i];
+                var cellValue = cell.innerText.trim();
+                if (i === 1) { // Priority column
+                    // Create buttons for each priority option
+                    var priorityOptions = ['Low', 'Normal', 'High'];
+                    var buttonsHtml = '';
+                    for (var j = 0; j < priorityOptions.length; j++) {
+                        var priorityOption = priorityOptions[j];
+                        buttonsHtml += `<button class="priority-btn ${priorityOption.toLowerCase()}" onclick="selectPriority(this)">${priorityOption}</button>`;
+                    }
+                    cell.innerHTML = buttonsHtml;
+                } else if (i === 2) { // Status column
+                    cell.innerHTML = `<select class="select-field">
+                                            <option value="todo" ${cellValue === 'To Do' ? 'selected' : ''}>To Do</option>
+                                            <option value="inprogress" ${cellValue === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                            <option value="done" ${cellValue === 'Done' ? 'selected' : ''}>Done</option>
+                                        </select>`;
+                } else if (i === 3) { // Percent complete column
+                    cell.innerHTML = `<select class="select-field percent-select">
+                                            <option value="0" ${cellValue === '0%' ? 'selected' : ''}>0%</option>
+                                            <option value="25" ${cellValue === '25%' ? 'selected' : ''}>25%</option>
+                                            <option value="50" ${cellValue === '50%' ? 'selected' : ''}>50%</option>
+                                            <option value="75" ${cellValue === '75%' ? 'selected' : ''}>75%</option>
+                                            <option value="100" ${cellValue === '100%' ? 'selected' : ''}>100%</option>
+                                        </select>`;
+                } else {
+                    cell.innerHTML = `<input type="text" class="input-field" value="${cellValue}">`;
+                }
+            }
+
+            // Remove delete button and checkbox
+            var actionsCell = cells[cells.length - 1];
+            actionsCell.removeChild(actionsCell.lastChild); // Remove delete button
+            actionsCell.removeChild(actionsCell.firstChild); // Remove checkbox
+
+            // Change button to save button
+            actionsCell.innerHTML += `<button onclick="saveTask(this)" class="action-btn edit-btn">Save</button>`;
+        }
+
+        function saveTask(btn) {
+            var row = btn.parentNode.parentNode;
+            var cells = row.getElementsByTagName('td');
+
+            // Get input values
+            var taskInput = cells[0].querySelector('input').value;
+            var prioritySelect = cells[1].querySelector('.priority-btn').textContent; // Update this line
+            var statusSelect = cells[2].querySelector('select').value;
+            var percentCompleteSelect = cells[3].querySelector('select').value;
+
+            // Update row with new values
+            cells[0].innerText = taskInput;
+            cells[1].innerHTML = `<button class="priority-btn ${prioritySelect.toLowerCase()}">${prioritySelect}</button>`;
+            cells[2].innerText = statusSelect;
+            cells[3].innerText = percentCompleteSelect + "%";
+
+            // Restore delete button and checkbox
+            var actionsCell = cells[cells.length - 1];
+            actionsCell.innerHTML = `
+                <input type="checkbox" onclick="markComplete(this)">
+                <button onclick="editTask(this)" class="action-btn edit-btn">Edit</button>
+                <button onclick="deleteTask(this)" class="action-btn delete-btn">Delete</button>
+            `;
+        }
+
+        function deleteTask(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function markComplete(checkbox) {
+            var row = checkbox.parentNode.parentNode;
+            if (checkbox.checked) {
+                row.classList.add('completed');
+                row.cells[2].innerText = 'Done'; // Set status to Done
+                row.cells[3].innerText = '100%'; // Set percent complete to 100%
+            } else {
+                row.classList.remove('completed');
+                row.cells[2].innerText = 'To Do'; // Set status to To Do
+                row.cells[3].innerText = '0%'; // Set percent complete to 0%
+            }
+        }
+
+        function selectPriority(btn) {
+            var priorityButtons = document.querySelectorAll('.priority-btn');
+            for (var i = 0; i < priorityButtons.length; i++) {
+                priorityButtons[i].classList.remove('active');
+            }
+            btn.classList.add('active');
+        }
+        
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
