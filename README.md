@@ -7,3 +7,5 @@ Welcome to the Task Manager project! This project comprises both frontend and ba
 2 - MongoDB installed and running on your local machine. Download and installation instructions can be found https://nodejs.org/en/download.
 #Steps to Setup:
 #Clone the Repository:
+This is a line with spaces between words using HTML entities: Hello&nbsp;&nbsp;World.
+
