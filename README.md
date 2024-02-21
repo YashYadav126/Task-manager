@@ -21,7 +21,7 @@
 <ol>
   <li><strong>Clone the Repository:</strong><br>
       Clone the project repository from GitHub using the following command:</li>
-  <pre><code>git clone https://github.com/yourusername/task-manager.git</code></pre>
+  <pre><code>git clone https://github.com/YashYadav126/task-manager.git</code></pre>
 
   <li><strong>Navigate to Project Directory:</strong><br>
       Move into the project directory using the following command:</li>
