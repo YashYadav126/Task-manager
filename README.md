@@ -8,6 +8,7 @@
 
 <h1>Welcome to the Task Manager project!</h1>
 <p>This project comprises both frontend and backend components developed using HTML, CSS, JavaScript, Node.js, Express.js, and MongoDB for database management.</p>
+<strong>Note:- there are two files for index.html and pro2.html.first files are outside and second files are inside public folder. You can simply delete those outside files as there are just for hosting on Github</strong>
 
 <h2>Setup Instructions:</h2>
 
